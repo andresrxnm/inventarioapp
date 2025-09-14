@@ -1,20 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Text, View, TextInput, Button, TouchableOpacity, Alert } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { auth } from "./firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 
 // Importa tus pantallas
 import RegistroScreen from "./screens/RegistroScreen";
 import AgregarProductoScreen from "./screens/AgregarProductoScreen";
 import ListaInventarioScreen from "./screens/ListaInventarioScreen";
 
+// -------------------------
 // Pantalla Login
+// -------------------------
 function LoginScreen({ navigation }) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  // Iniciar sesión
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -24,9 +37,26 @@ function LoginScreen({ navigation }) {
     }
   };
 
+  
+  const handleSignUp = async () => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      Alert.alert("Registro exitoso ✅", "Tu cuenta fue creada con éxito");
+    } catch (error) {
+      Alert.alert("Error al registrarse", error.message);
+    }
+  };
+
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 30 }}>
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          textAlign: "center",
+          marginBottom: 30,
+        }}
+      >
         Iniciar Sesión
       </Text>
 
@@ -63,7 +93,10 @@ function LoginScreen({ navigation }) {
 
       <Button title="Ingresar" onPress={handleLogin} />
 
-      <TouchableOpacity onPress={() => navigation.navigate("Registro")} style={{ marginTop: 15 }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Registro")}
+        style={{ marginTop: 15 }}
+      >
         <Text style={{ textAlign: "center", color: "blue" }}>
           ¿No tienes cuenta? Regístrate
         </Text>
@@ -72,10 +105,11 @@ function LoginScreen({ navigation }) {
   );
 }
 
-// Stack Navigator
+// -------------------------
+// Stack Navigator principal
+// -------------------------
 const Stack = createNativeStackNavigator();
 
-// App principal
 export default function App() {
   return (
     <NavigationContainer>
@@ -83,7 +117,10 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Registro" component={RegistroScreen} />
         <Stack.Screen name="Inventario" component={ListaInventarioScreen} />
-        <Stack.Screen name="AgregarProducto" component={AgregarProductoScreen} />
+        <Stack.Screen
+          name="AgregarProducto"
+          component={AgregarProductoScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
